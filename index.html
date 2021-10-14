@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title></title>
+	<style type="text/css">
+		body {
+			background: #eee;
+			font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+		}
+		
+		.wrap {
+			background: #fff;
+			max-width: 500px;
+			margin: 50px auto;
+			padding: 70px 50px;
+			box-shadow: 0 0 25px rgba(0,0,0,0.1);
+			border-radius: 5px;
+		}
+
+		#success {
+		  background: #E1F8ED;
+		  border: solid 1px #97e0bd;
+		}
+
+		#error {
+		  background: #ffe8e8;
+		  border: solid 1px #ffbbbb;
+		  color: #c02121;
+		}
+
+		.status {
+		  display: none;
+		  border-radius: 5px;
+		  padding: 20px;
+		  margin-top: 16px;
+		  margin-bottom: 16px;
+		}
+
+		.status.is-active {
+		  display: block;
+		}
+
+		form > div {
+			margin-bottom: 30px;
+		}
+
+		textarea {
+			min-height: 150px;
+		}
+
+		form input[type=text], form input[type=email], textarea {
+			width: 100%;
+			padding: 10px;
+			border: solid 1px #ccc;
+			box-sizing: border-box;
+			font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+			font-size: 1em;
+		}
+
+		form input[type=text]:focus, form input[type=email]:focus, textarea:focus {
+			outline: none;
+			border-color: #4cafe1;
+    		box-shadow: 0 0 0 3px #d6eaf5;
+		}
+
+		form button:hover {
+			background-color: #0b79b4;
+		}
+
+		form button[disabled] {
+			background-color: #ccc;
+		}
+
+		form button {
+			border: none;
+			background-color: #1aa6f1;
+			color: #fff;
+			font-size: 16px;
+			font-weight: 700;
+			padding-top: 20px;
+			padding-bottom: 20px;
+			box-shadow: none;
+			color: #fff;
+			line-height: 1;
+			padding: 13px 25px;
+			font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+			font-weight: 700;
+			text-align: center;
+			text-decoration: none;
+			width: auto;
+			-webkit-appearance: none;
+			-moz-appearance: none;
+			appearance: none;
+			cursor: pointer;
+			border-radius: 3px;
+			-webkit-transition: all 0.1s ease-in-out;
+			-moz-transition: all 0.1s ease-in-out;
+			-ms-transition: all 0.1s ease-in-out;
+			-o-transition: all 0.1s ease-in-out;
+			transition: all 0.3s ease-in-out;			
+		}
+
+		label {
+			display: block;
+		}
+	</style>
+</head>
+<body>
+</div>
+	<div class="wrap">
+		<h1>Get in touch</h1>
+		<div id="error" class="status"></div>
+		<div id="success" class="status">Sent!</div>
+		<!-- <form id="ajaxForm" action="https://api.aamu.app/api/v1/forms/7c45d1e5-44cd-4973-bc0c-b933c066781d" method="POST" enctype="multipart/form-data" > -->
+		<form id="ajaxForm" action="http://127.0.0.1/" method="POST" enctype="multipart/form-data" >
+			<div>
+				<input placeholder="Name" type="text" name="name" id="form_name" required>
+			</div>
+			<div>
+				<input placeholder="Email" type="text" name="email" id="form_email" required>
+			</div>
+			<div>
+				<textarea placeholder="Message" name="message" id="form_message" required></textarea>
+			</div>
+			<button id="submit" type="submit">Send</button>
+		</form>
+	</div>
+	
+	<!--  Remove this if you don't want AJAX -->
+	<script type="text/javascript">
+	
+		function addTimezoneInfo() {
+			const form = document.getElementById('ajaxForm');
+	
+			if (form) {
+				var els = form.querySelectorAll('input[type=datetime-local]');
+	
+				els.forEach(function (el) {
+					if (typeof Intl != 'undefined') {
+						form.querySelectorAll('input[type="hidden"][name="' + el.getAttribute('name') + '.timezone"]').forEach(function (el) {
+							el.setAttribute('value', Intl.DateTimeFormat().resolvedOptions().timeZone);
+						});
+					}
+	
+					form.querySelectorAll('input[type="hidden"][name="' + el.getAttribute('name') + '.timezoneoffset"]').forEach(function (el) {
+						el.setAttribute('value', new Date().getTimezoneOffset());
+					});
+				});
+			}
+		}
+	
+		function submit(e) {
+			e.preventDefault();
+			const body = new FormData(this);
+			const submitEl = document.getElementById('submit')
+			const errorEl = document.getElementById('error')
+			const successEl = document.getElementById('success')
+			submitEl.disabled = true;
+			
+			fetch(this.action, {
+				body: body,
+				method: "post"
+			}).then((response) => {
+				return response.json();
+			}).then((data) => {
+				if (data.success) {
+					successEl.classList.add('is-active');
+				}
+			}).catch((err) => {
+				submitEl.disabled = false;
+				errorEl.innerHTML = err.toString();
+				errorEl.classList.add('is-active');
+			});
+		}
+	
+		addTimezoneInfo();
+
+		const ajaxForm = document.getElementById('ajaxForm');
+		
+		if (ajaxForm.action == 'http://127.0.0.1/') {
+			alert('Please, change the form endpoint (action).')
+		}
+		else {
+			ajaxForm.addEventListener('submit', submit);
+		}
+	</script>
+	
+
+
+</body>
+</html>
